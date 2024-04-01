@@ -24,13 +24,47 @@ for directory in directories:
 
 flight_data = pd.concat(all_data, ignore_index=True)
 
-print(flight_data.head())
-
-# List of recommended flight columns
 recommended_columns = ['FlightDate', 'Quarter', 'Year', 'Month', 'DayofMonth', 'DepTime', 'DepDel15', 'CRSDepTime', 'DepDelayMinutes', 'Origin', 'Dest', 'ArrTime', 'CRSArrTime', 'ArrDel15', 'ArrDelayMinutes']
 
 
 flight_data = flight_data[recommended_columns]
 
-print(flight_data.head())
+
+#now let's do similar thing with the weather data
+
+
+
+root_directory = "C:/Users/HP/Downloads/airport data"
+
+all_weather_data = []
+
+
+for root, dirs, files in os.walk(root_directory):
+    for file in files:
+        if file.endswith(".json"):
+            file_path = os.path.join(root, file)
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+                weather_data = data.get('data', {}).get('weather', [])
+                airport_name = data.get('data', {}).get('request', [{}])[0].get('query', '')
+                for entry in weather_data:
+                    hourly_data = entry.get('hourly', [])
+                    weather_df = pd.DataFrame(hourly_data)
+                    weather_df['airport'] = airport_name
+                    weather_df['date'] = entry.get('date', '')
+                    all_weather_data.append(weather_df)
+
+
+weather_data = pd.concat(all_weather_data, ignore_index=True)
+
+
+desired_columns = ['windspeedKmph', 'winddirDegree', 'weatherCode', 'precipMM', 
+                   'visibility', 'pressure', 'cloudcover', 'DewPointF', 
+                   'WindGustKmph', 'tempF', 'WindChillF', 'humidity', 
+                   'time', 'date', 'airport']
+weather_data = weather_data[desired_columns]
+
+
+
+
 
