@@ -65,6 +65,19 @@ desired_columns = ['windspeedKmph', 'winddirDegree', 'weatherCode', 'precipMM',
 weather_data = weather_data[desired_columns]
 
 
+# Convert 'FlightDate' column to datetime format
+flight_data_filtered['FlightDate'] = pd.to_datetime(flight_data_filtered['FlightDate'])
+
+# Merging the  flight and weather data based on common
+merged_data = pd.merge(flight_data_filtered, weather_data_filtered, how='inner', left_on=['FlightDate', 'Origin'], right_on=['date', 'airport_code'])
+
+
+merged_data.drop(['date', 'airport_code'], axis=1, inplace=True)
+
+
+merged_data.to_csv('merged_data.csv', index=False)
+
+
 
 
 
