@@ -26,3 +26,11 @@ flight_data = pd.concat(all_data, ignore_index=True)
 
 print(flight_data.head())
 
+# List of recommended flight columns
+recommended_columns = ['FlightDate', 'Quarter', 'Year', 'Month', 'DayofMonth', 'DepTime', 'DepDel15', 'CRSDepTime', 'DepDelayMinutes', 'Origin', 'Dest', 'ArrTime', 'CRSArrTime', 'ArrDel15', 'ArrDelayMinutes']
+
+
+flight_data = flight_data[recommended_columns]
+
+print(flight_data.head())
+
