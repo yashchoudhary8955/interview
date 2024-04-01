@@ -1,0 +1,28 @@
+import pandas as pd
+import json
+from os import listdir
+
+
+directories = [
+    "C:/Users/HP/Downloads/flight data/2016_original/2016",
+    "C:/Users/HP/Downloads/flight data/2016_original/2017"
+]
+
+# List all flight data from 2016 to 2017
+all_data = []
+
+
+for directory in directories:
+    
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".csv"):
+                file_path = os.path.join(root, file)
+                df = pd.read_csv(file_path)
+                all_data.append(df)
+
+
+flight_data = pd.concat(all_data, ignore_index=True)
+
+print(flight_data.head())
+
