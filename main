@@ -77,6 +77,49 @@ merged_data.drop(['date', 'airport_code'], axis=1, inplace=True)
 
 merged_data.to_csv('merged_data.csv', index=False)
 
+#but facing memory error in it so using chunks to remove memory error
+#so another approach tried
+selected_airports = ['ATL', 'CLT', 'DEN', 'DFW', 'EWR', 'IAH', 'JFK', 'LAS', 'LAX', 'MCO', 'MIA', 'ORD', 'PHX', 'SEA', 'SFO']
+years = [2016, 2017]
+
+# Filtering the flightdata
+flight_data_filtered = flight_data[(flight_data['Origin'].isin(selected_airports)) & 
+                                   (flight_data['Dest'].isin(selected_airports)) & 
+                                   (flight_data['Year'].isin(years))]
+
+# Convert 'FlightDate' column to datetime
+flight_data_filtered['FlightDate'] = pd.to_datetime(flight_data_filtered['FlightDate'])
+
+
+
+# Extracting airport codes
+weather_data['airport_code'] = weather_data['airport'].str.split(',').str[0]
+
+# Filtering of weather data similar to what we did before
+weather_data_filtered = weather_data[(weather_data['airport_code'].isin(selected_airports)) &
+                                     (weather_data['date'].dt.year.isin(years))]
+
+# Defining chunk size
+chunk_size = 10000  
+
+
+merged_chunks = []
+
+# Iterate over chunks of flight data to merge
+for i in range(0, len(flight_data_filtered), chunk_size):
+    flight_chunk = flight_data_filtered.iloc[i:i+chunk_size]
+    merged_chunk = pd.merge(flight_chunk, weather_data_filtered, how='inner', left_on=['FlightDate', 'Origin'], right_on=['date', 'airport_code'])
+    merged_chunks.append(merged_chunk)
+
+merged_data = pd.concat(merged_chunks, ignore_index=True)
+
+merged_data.drop(['date', 'airport_code'], axis=1, inplace=True)
+
+
+merged_data.to_csv('merged_data.csv', index=False)
+
+
+
 
 
 
